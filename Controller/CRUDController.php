@@ -104,8 +104,18 @@ class CRUDController extends Controller
         $datagrid = $this->admin->getDatagrid();
         $formView = $datagrid->getForm()->createView();
 
-        // set the theme for the current Admin Form
-        $this->get('twig')->getExtension('Symfony\Bridge\Twig\Extension\FormExtension')->renderer->setTheme($formView, $this->admin->getFilterTheme());
+        /**
+         * Set the theme for the current Admin Form.
+         *
+         * The renderer property was made private in SF 3.2, so we access it through the container.
+         * If it's not available, rely on the public property for BC.
+         */
+        if ($this->container->has('twig.form.renderer')) {
+            $formRenderer = $this->get('twig.form.renderer');
+        } else {
+            $formRenderer = $this->get('twig')->getExtension('Symfony\Bridge\Twig\Extension\FormExtension')->renderer;
+        }
+        $formRenderer->setTheme($formView, $this->admin->getFilterTheme());
 
         return $this->render($this->admin->getTemplate('list'), array(
             'action' => 'list',
@@ -320,8 +330,18 @@ class CRUDController extends Controller
 
         $view = $form->createView();
 
-        // set the theme for the current Admin Form
-        $this->get('twig')->getExtension('Symfony\Bridge\Twig\Extension\FormExtension')->renderer->setTheme($view, $this->admin->getFormTheme());
+        /**
+         * set the theme for the current Admin Form
+         *
+         * The renderer property was made private in SF 3.2, so we access it through the container.
+         * If it's not available, rely on the public property for BC.
+         */
+        if ($this->container->has('twig.form.renderer')) {
+            $formRenderer = $this->get('twig.form.renderer');
+        } else {
+            $formRenderer = $this->get('twig')->getExtension('Symfony\Bridge\Twig\Extension\FormExtension')->renderer;
+        }
+        $formRenderer->renderer->setTheme($view, $this->admin->getFormTheme());
 
         return $this->render($this->admin->getTemplate($templateKey), array(
             'action' => 'edit',
@@ -559,8 +579,18 @@ class CRUDController extends Controller
 
         $view = $form->createView();
 
-        // set the theme for the current Admin Form
-        $this->get('twig')->getExtension('Symfony\Bridge\Twig\Extension\FormExtension')->renderer->setTheme($view, $this->admin->getFormTheme());
+        /**
+         * Set the theme for the current Admin Form
+         *
+         * The renderer property was made private in SF 3.2, so we access it through the container.
+         * If it's not available, rely on the public property for BC.
+         */
+        if ($this->container->has('twig.form.renderer')) {
+            $formRenderer = $this->get('twig.form.renderer');
+        } else {
+            $formRenderer = $this->get('twig')->getExtension('Symfony\Bridge\Twig\Extension\FormExtension')->renderer;
+        }
+        $formRenderer->setTheme($view, $this->admin->getFormTheme());
 
         return $this->render($this->admin->getTemplate($templateKey), array(
             'action' => 'create',
