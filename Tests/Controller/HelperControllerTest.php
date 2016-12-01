@@ -20,6 +20,7 @@ use Sonata\AdminBundle\Twig\Extension\SonataAdminExtension;
 use Symfony\Bridge\Twig\Extension\FormExtension;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 
@@ -328,6 +329,15 @@ class HelperControllerTest extends \PHPUnit_Framework_TestCase
 
         $twig = new \Twig_Environment($this->getMock('\Twig_LoaderInterface'));
         $twig->addExtension(new FormExtension($mockRenderer));
+        if (Kernel::VERSION_ID >= 30200) {
+            $twigRuntimeLoader = $this->getMock('\Twig_RuntimeLoaderInterface');
+            $twigRuntimeLoader->expects($this->any())->method('load')
+                ->with('Symfony\Bridge\Twig\Form\TwigRenderer')
+                ->willReturn($mockRenderer);
+
+            $twig->addRuntimeLoader($twigRuntimeLoader);
+        }
+
         $request = new Request(array(
             'code' => 'sonata.post.admin',
             'objectId' => 42,
@@ -408,6 +418,16 @@ class HelperControllerTest extends \PHPUnit_Framework_TestCase
 
         $twig = new \Twig_Environment($this->getMock('\Twig_LoaderInterface'));
         $twig->addExtension(new FormExtension($mockRenderer));
+
+        if (Kernel::VERSION_ID >= 30200) {
+            $twigRuntimeLoader = $this->getMock('\Twig_RuntimeLoaderInterface');
+            $twigRuntimeLoader->expects($this->any())->method('load')
+                ->with('Symfony\Bridge\Twig\Form\TwigRenderer')
+                ->willReturn($mockRenderer);
+
+            $twig->addRuntimeLoader($twigRuntimeLoader);
+        }
+
         $request = new Request(array(
             'code' => 'sonata.post.admin',
             'objectId' => 42,

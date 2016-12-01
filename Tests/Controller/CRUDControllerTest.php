@@ -287,7 +287,8 @@ class CRUDControllerTest extends \PHPUnit_Framework_TestCase
                 $csrfProvider,
                 $logger,
                 $kernel,
-                $translator
+                $translator,
+                $twigRenderer
             ) {
                 switch ($id) {
                     case 'sonata.admin.pool':
@@ -319,6 +320,8 @@ class CRUDControllerTest extends \PHPUnit_Framework_TestCase
                         return $kernel;
                     case 'translator':
                         return $translator;
+                    case 'twig.form.renderer':
+                        return $twigRenderer;
                 }
             }));
 
@@ -349,6 +352,10 @@ class CRUDControllerTest extends \PHPUnit_Framework_TestCase
                 }
 
                 if ($id == 'translator') {
+                    return true;
+                }
+
+                if ($id == 'twig.form.renderer' && Kernel::VERSION_ID >= 30200) {
                     return true;
                 }
 

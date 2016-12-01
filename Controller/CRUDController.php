@@ -20,6 +20,7 @@ use Sonata\AdminBundle\Exception\LockException;
 use Sonata\AdminBundle\Exception\ModelManagerException;
 use Sonata\AdminBundle\Util\AdminObjectAclData;
 use Sonata\AdminBundle\Util\AdminObjectAclManipulator;
+use Symfony\Bridge\Twig\Form\TwigRenderer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\Form;
@@ -105,7 +106,8 @@ class CRUDController extends Controller
         $formView = $datagrid->getForm()->createView();
 
         // set the theme for the current Admin Form
-        $this->get('twig')->getExtension('Symfony\Bridge\Twig\Extension\FormExtension')->renderer->setTheme($formView, $this->admin->getFilterTheme());
+        $formRenderer = $this->getFormRenderer();
+        $formRenderer->setTheme($formView, $this->admin->getFilterTheme());
 
         return $this->render($this->admin->getTemplate('list'), array(
             'action' => 'list',
@@ -321,7 +323,8 @@ class CRUDController extends Controller
         $view = $form->createView();
 
         // set the theme for the current Admin Form
-        $this->get('twig')->getExtension('Symfony\Bridge\Twig\Extension\FormExtension')->renderer->setTheme($view, $this->admin->getFormTheme());
+        $formRenderer = $this->getFormRenderer();
+        $formRenderer->setTheme($view, $this->admin->getFormTheme());
 
         return $this->render($this->admin->getTemplate($templateKey), array(
             'action' => 'edit',
@@ -560,7 +563,8 @@ class CRUDController extends Controller
         $view = $form->createView();
 
         // set the theme for the current Admin Form
-        $this->get('twig')->getExtension('Symfony\Bridge\Twig\Extension\FormExtension')->renderer->setTheme($view, $this->admin->getFormTheme());
+        $formRenderer = $this->getFormRenderer();
+        $formRenderer->setTheme($view, $this->admin->getFormTheme());
 
         return $this->render($this->admin->getTemplate($templateKey), array(
             'action' => 'create',
@@ -1363,5 +1367,18 @@ class CRUDController extends Controller
         $domain = $domain ?: $this->admin->getTranslationDomain();
 
         return $this->get('translator')->trans($id, $parameters, $domain, $locale);
+    }
+
+    /**
+     * @return TwigRenderer
+     */
+    private function getFormRenderer()
+    {
+        if ($this->container->has('twig.form.renderer')) {
+
+            return $formRenderer = $this->container->get('twig.form.renderer');
+        }
+
+        return $formRenderer = $this->get('twig')->getExtension('Symfony\Bridge\Twig\Extension\FormExtension')->renderer;
     }
 }
